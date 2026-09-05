@@ -1,47 +1,50 @@
 # =========================================================
-# Altium Designer
+# AMD/Xilinx Vivado generated files
 # =========================================================
 
-# Local history / previews
-History/
-__Previews/
+# Project-local generated directories
+.Xil/
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
 
-# Generated logs and outputs
-Project Logs*/
-Project Outputs*/
+# Vivado journals / logs / temporary files
+vivado.jou
+vivado.log
+vivado*.jou
+vivado*.log
+webtalk.jou
+webtalk.log
+webtalk*.jou
+webtalk*.log
+*.str
+*.pb
+*.wdb
 
-# Generated preview / report files
-*.SchDocPreview
-*.PcbDocPreview
-*.PcbDoc.htm
-debug.log
-Status Report.txt
+# Generated reports / temporary exports
+*.rpt
+*.dcp
+*.ltx
+*.bit
+*.bin
 
-# Lock files
-.~lock.*
+# IP-generated output products
+*.veo
+*.vho
+*_stub.v
+*_stub.vhdl
 
-# =========================================================
-# Operating system / editor noise
-# =========================================================
-
-.DS_Store
-Thumbs.db
-Desktop.ini
-
-.vscode/
-.idea/
-
-# =========================================================
-# Python cache
-# =========================================================
-
-__pycache__/
-*.py[cod]
-
-# =========================================================
-# Temporary / backup files
-# =========================================================
-
-*.bak
-*.tmp
-*.temp
+# Keep source-controlled design inputs:
+#   *.xci
+#   *.xdc
+#   *.tcl
+#   *.v
+#   *.sv
+#   *.vhd
+#
+# The project will later include a Tcl recreation script so the
+# generated Vivado project can be rebuilt without committing large
+# tool-generated directories.
