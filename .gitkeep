@@ -1,0 +1,14 @@
+docs/requirements/.gitkeep
+docs/architecture/.gitkeep
+docs/decisions/.gitkeep
+docs/calculations/.gitkeep
+docs/validation/.gitkeep
+docs/references/.gitkeep
+
+hardware/altium/.gitkeep
+hardware/libraries/.gitkeep
+hardware/manufacturing/.gitkeep
+
+fpga/.gitkeep
+software/.gitkeep
+images/.gitkeep
