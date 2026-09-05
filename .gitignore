@@ -1,0 +1,47 @@
+# =========================================================
+# Altium Designer
+# =========================================================
+
+# Local history / previews
+History/
+__Previews/
+
+# Generated logs and outputs
+Project Logs*/
+Project Outputs*/
+
+# Generated preview / report files
+*.SchDocPreview
+*.PcbDocPreview
+*.PcbDoc.htm
+debug.log
+Status Report.txt
+
+# Lock files
+.~lock.*
+
+# =========================================================
+# Operating system / editor noise
+# =========================================================
+
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+.vscode/
+.idea/
+
+# =========================================================
+# Python cache
+# =========================================================
+
+__pycache__/
+*.py[cod]
+
+# =========================================================
+# Temporary / backup files
+# =========================================================
+
+*.bak
+*.tmp
+*.temp
