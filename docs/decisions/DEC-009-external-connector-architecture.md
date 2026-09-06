@@ -1,122 +1,150 @@
 # DEC-009 — External Instrumentation Connector Architecture
 
-Status: PROVISIONAL
+Status: BASELINE SELECTED
 Revision: Rev A
 Project: fpga-pcie-instrumentation-platform
 
 ## Decision
 
-Use one shielded 68-position external I/O connector as the Rev A baseline for the instrumentation interface.
+Rev A will use a single 68-position TE Connectivity CHAMP 0.8 mm right-angle external connector as the baseline instrumentation interface.
 
-Preferred family for the first mechanical/electrical study:
-- 3M MDR 68-position boardmount / cable system
+Selected baseline candidate:
+- Manufacturer: TE Connectivity
+- MPN: 5796055-1
+- Interface family: CHAMP 0.8 mm
+- Positions: 68
+- Orientation: Right-angle
+- Mounting: Through-hole, board/panel mount
+- Shielded: Yes
+- Recommended PCB thickness: approximately 1.6 mm
 
-This is not yet a released part-number selection. The exact PCB connector orientation, backshell/cable assembly, mounting hardware, and mating cable must be verified against the PCIe bracket and board mechanical envelope before schematic lock.
+The part remains subject to final sourcing and production-BOM review, but it is now the Rev A mechanical/electrical baseline.
 
-## Why this family is the current baseline
+## Why this connector was selected
 
-The Rev A interface currently targets approximately:
-- 20 differential pairs total
-  - 4 timing/trigger pairs in Bank 34
-  - 8 general LVDS pairs in Bank 16
-  - 8 general LVDS pairs in Bank 35
-- substantial ground allocation between/around high-speed signal groups
-- a small number of reserved or low-speed contacts
+The low-profile PCIe mechanical envelope materially constrains the external connector.
 
-A 68-position connector gives enough contact count for this architecture without forcing every contact to carry a signal.
+The previously studied 68-position 3M MDR connector was rejected for Rev A low-profile use because its required panel-cutout / mounting span is too large for a clean standard low-profile bracket implementation.
 
-The 3M MDR cable family is available in 68-position versions and is intended for shielded external I/O. 3M specifies 100-ohm balanced differential use for the pleated-foil MDR cable family and provides metal-shell / thumbscrew or latch options.
+The TE 5796055-1 provides:
+- 68 contacts in a much more compact front-panel envelope
+- right-angle PCB mounting
+- shielded external interface
+- 0.8 mm contact pitch
+- compatibility with approximately 1.6 mm PCB thickness
+- significantly better low-profile bracket fit margin
+
+## Footprint audit
+
+The imported CAD footprint was audited against the TE mechanical drawing before acceptance.
+
+Verified signal-pad geometry:
+- 68 signal contacts
+- signal pad: approximately 1.00 mm diameter
+- signal drill: approximately 0.65 mm
+- horizontal contact pitch: 0.80 mm
+- four-row staggered geometry
+
+Representative verified signal coordinates:
+- Pad 1:  X =  0.00 mm, Y =  0.00 mm
+- Pad 2:  X = -0.80 mm, Y = -1.15 mm
+- Pad 35: X = +0.40 mm, Y = -2.35 mm
+- Pad 36: X = -0.40 mm, Y = -3.50 mm
+
+Verified mechanical features:
+- MH1: X =   3.175 mm, Y = -2.25 mm
+- MH2: X = -29.175 mm, Y = -2.25 mm
+- MH3: X =   7.95 mm,  Y = -4.88 mm
+- MH4: X = -33.95 mm,  Y = -4.88 mm
+
+The audited footprint is maintained in the project PCB library as:
+TE_5796055-1_CHAMP68_RA
+
+## Mechanical-layer convention
+
+For the project-controlled footprint:
+- M13: assembly / component body / 3D-body reference
+- M15: courtyard
+
+A manufacturer-derived PCB-edge datum is also included in the footprint for mechanical placement.
+
+## Low-profile PCIe fit study
+
+The connector was placed on the Rev A low-profile card mechanical study at:
+
+- X = 6.30 mm
+- Y = 19.35 mm
+- Rotation = 270 degrees
+
+This placement aligns the connector PCB-edge datum with the bracket-side PCB datum and centers the connector approximately within the usable low-profile bracket opening.
+
+Result:
+- mechanically acceptable as the Rev A low-profile baseline
+- substantially better fit margin than the rejected MDR68 candidate
+- final bracket cutout and sheet-metal drawing still required before release
 
 ## Preliminary contact budget
 
-Do not freeze exact contact numbers yet.
+Target use:
+- 20 differential pairs = 40 contacts
+- remaining contacts primarily assigned to signal return / ground
+- limited reserved / low-speed contacts as required
 
-Target budget:
-- 40 contacts: 20 differential signal pairs
-- 24 contacts: signal-return / ground
-- 4 contacts: reserved / low-speed / future use
-
-Total: 68 contacts
-
-This is a budgeting model only. The final pinout may move some reserved contacts to ground if signal-integrity review shows that is preferable.
+The exact connector pinout is not yet frozen.
 
 ## Functional partition
 
-### Timing / trigger group — Bank 34
+### Bank 34 — timing / trigger
 - EXT_CLK_P/N
 - TRIG_IN_P/N
 - TRIG_OUT_P/N
 - CLK_OUT_P/N
 
-### General differential group A — Bank 16
-- 8 differential pairs
+### Bank 16 — differential instrumentation group A
+- target: 8 differential pairs
 
-### General differential group B — Bank 35
-- 8 differential pairs
+### Bank 35 — differential instrumentation group B
+- target: 8 differential pairs
 
-## Grounding strategy
+## Electrical baseline
 
-The external connector must not be treated as 40 signal pins plus a distant ground cluster.
-
-Preferred approach:
-- distribute ground contacts through the connector
-- place grounds adjacent to or between high-speed differential groups where the connector geometry allows
-- connect cable shield/chassis appropriately at the external interface
-- keep signal-reference return paths distinct from arbitrary long PCB ground detours
-- decide chassis-to-digital-ground coupling strategy during EMC/mechanical design
-
-The exact connector contact map must be reviewed with the cable construction, not only with the PCB connector pinout.
-
-## Electrical assumptions
-
-Baseline:
 - FPGA Banks 16/34/35: 2.5 V
-- FPGA differential standard: LVDS_25
+- baseline FPGA differential standard: LVDS_25
 - target differential impedance: 100 ohm
-- no assumption yet that all pairs support the maximum electrical capability of the connector/cable
-- actual supported data rate will be determined by FPGA I/O behavior, board stack-up, routing, connector/cable insertion loss, receiver margin, and validation
+- exact termination and protection topology: TBD
+- supported cable/data rate: TBD and must be validated
 
-## Alternatives considered
+## Grounding / shielding intent
 
-### Samtec Q Pairs / HQDP
-Technically attractive:
-- 100-ohm differential routing
-- high-speed twinax cable
-- high pair density
-- screw-mount options
+The final pinout shall:
+- distribute ground contacts through the connector
+- maintain controlled return paths around differential groups
+- avoid a single remote ground cluster
+- provide an intentional cable-shield / chassis-bonding strategy
+- keep protection components physically close to the external connector where practical
 
-Reason not selected as the default external front-panel baseline yet:
-- it is a denser high-speed board/cable system and may be less convenient than MDR for a conventional lab-instrumentation front-panel interface
-- mechanical accessibility, bracket integration, cable cost, and sourcing should be evaluated before using it as the primary user-facing connector
+## Rejected alternative
 
-Keep Samtec Q Pairs as the performance-oriented alternative if the eventual bandwidth requirement exceeds what is practical with the MDR implementation.
+3M MDR 68-position right-angle connector:
+- retained in the project library as a studied alternative
+- rejected as the Rev A low-profile baseline because its mechanical panel-span requirement is too large for a clean standard low-profile implementation
 
-## Not yet locked
+## Remaining design gates
 
-- exact 3M MDR PCB connector part number
-- right-angle versus vertical orientation
-- bracket cutout
-- cable assembly part number and length
-- shield termination
-- exact connector contact assignment
-- final number of ground contacts
-- low-speed/reserved contact use
-- ESD protection topology
-- common-mode filtering, if any
-- final maximum supported data rate
-
-## Verification gates before final selection
-
-1. Confirm available PCIe bracket/board edge space.
-2. Select candidate 68-position boardmount connector orientation.
-3. Obtain manufacturer drawing and STEP model.
-4. Place connector and FPGA approximately in the PCB floorplan.
-5. Check whether Banks 16/34/35 can route cleanly to the connector.
-6. Define connector contact-to-pair grouping and ground distribution.
-7. Check cable assembly availability and mating hardware.
-8. Review impedance, insertion loss, skew, shielding, and return paths.
-9. Freeze the exact manufacturer part numbers only after the mechanical and routing study.
+Before schematic release:
+1. Create the final low-profile bracket cutout drawing.
+2. Freeze the exact board outline and bracket datum.
+3. Finalize connector placement.
+4. Freeze contact-to-signal assignment.
+5. Allocate final FPGA Bank 16/34/35 package pins.
+6. Define shield/chassis grounding.
+7. Define ESD / surge / filtering strategy.
+8. Review routing escape and return-current paths.
+9. Verify connector and cable sourcing.
+10. Perform final mechanical / 3D interference review.
 
 ## Current engineering conclusion
 
-Proceed with a 68-position MDR-style shielded external connector as the Rev A mechanical/electrical baseline, but keep the exact part number provisional until the board floorplan confirms it.
+TE Connectivity 5796055-1 is accepted as the Rev A external instrumentation connector baseline for the low-profile PCIe card.
+
+The next design step is to freeze the actual low-profile PCB outline and bracket geometry around this connector and the PCIe edge interface.
