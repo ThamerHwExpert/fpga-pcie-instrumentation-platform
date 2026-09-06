@@ -1,116 +1,116 @@
 # DEC-010 — PCIe Card Mechanical Envelope
 
-Status: PROVISIONAL
+Status: BASELINE SELECTED
 Revision: Rev A
 Project: fpga-pcie-instrumentation-platform
 
 ## Decision
 
-Before selecting the exact external connector part number or final FPGA-to-connector pin mapping, Rev A will define and verify the PCIe card mechanical envelope.
+Rev A will use a **low-profile PCI Express add-in-card mechanical architecture**.
 
-The current design shall use a standard PCI Express add-in-card mechanical architecture.
+This choice is now the baseline for:
+- PCB outline development
+- bracket design
+- external connector fit checks
+- component-height planning
+- FPGA / power / connector floorplanning
 
-The exact card height class is not yet locked:
-- full-height
-- low-profile
+## PCIe mechanical baseline
 
-This must be decided before the external connector and bracket geometry are frozen.
+Current baseline:
+- Form factor: Low-profile PCI Express add-in card
+- Electrical interface: PCIe x4
+- Card height class: Low-profile
+- Maximum PCB height: 68.90 mm
+- Board length: TBD
+- Slot width: single-slot target
+- I/O bracket: low-profile bracket
+- Full-height adapter bracket: optional later, not the Rev A baseline
 
-## Mechanical items to define
+The final outline shall be derived from the applicable PCI Express Card Electromechanical mechanical drawings rather than from a generic custom outline.
 
-### PCIe edge
-- PCIe x4 electrical interface
-- connector keying and edge-finger geometry per PCIe add-in-card requirements
-- board thickness and gold-finger stack-up to be defined with the PCB manufacturer
+## Immediate design consequence
 
-### Bracket
-- bracket height class: TBD
-- external connector must be mechanically accessible through the bracket
-- connector retention hardware must not interfere with bracket fastening
-- cable insertion/removal forces must be supported by the mechanical structure, not only by solder joints
+The low-profile choice significantly reduces available front-panel / bracket area.
 
-### Board outline
-The final board outline is TBD.
+Therefore the previously selected provisional 68-position MDR external connector must now pass a dedicated fit check before its exact part number is locked.
 
-Before schematic release:
-1. establish PCIe edge position
-2. establish bracket datum
-3. choose full-height or low-profile envelope
-4. reserve keep-outs around the edge connector
-5. reserve the external I/O connector region
-6. reserve FPGA and power-conversion regions
-7. check component-height restrictions
-8. check enclosure/chassis interference
+For the 3M 102-series 68-position right-angle MDR family, the manufacturer drawing shows approximately:
+- connector overall span: 63.8 mm
+- contact-body span: 57.9 mm
+- recommended panel cutout width: approximately 57.9 mm
+- panel cutout height: approximately 8.1 mm
 
-## External connector study
+These dimensions are close enough to the available low-profile bracket envelope that connector orientation, bracket margins, screw-lock access, and mounting-tab geometry must be checked explicitly.
 
-Current provisional architecture:
-- one shielded 68-position external instrumentation connector
-- 3M MDR family is the preferred first candidate
-- exact part number and orientation remain TBD
-
-The connector shall not be locked until:
-- bracket height is chosen
-- board outline is established
-- connector mechanical drawing is checked against the bracket opening
-- cable backshell and latch/thumbscrew access are verified
-- FPGA-to-connector routing feasibility is reviewed
+Therefore:
+- 68-position MDR remains a candidate
+- it is NOT yet mechanically approved
+- no final connector part number shall be released until the bracket drawing is checked
 
 ## Preliminary floorplan intent
 
-Preferred functional zoning:
-
-PCIe bracket side:
+### Bracket side
 - external instrumentation connector
-- ESD / protection / optional filtering close to connector
+- connector shield/chassis bonding
+- ESD / protection elements directly behind connector where practical
 
-PCIe edge side:
-- x4 PCIe edge connector
-- PCIe REFCLK and PERST# routing
+### PCIe edge / FPGA region
+- FPGA located to keep PCIe GTP traces short
+- PCIe REFCLK routed directly from edge connector to selected MGTREFCLK pins
+- PERST# routed to Bank 15
+- avoid routing high-speed external I/O through the PCIe lane corridor
 
-Central high-speed region:
-- FPGA
-- short PCIe GTP routing between FPGA and edge connector
-
-Near FPGA:
+### Near FPGA
 - configuration flash
-- JTAG access
 - local oscillator
-- FPGA decoupling
+- JTAG header or compact debug connector
+- local decoupling
 
-Power region:
-- slot power entry
-- input filtering/protection
-- FPGA rail regulators
-- sequencing / supervision
+### Power region
+- PCIe slot power entry
+- filtering / protection
+- regulators
+- sequencing / monitoring
 
 ## Mechanical verification gates
 
-Before exact connector part-number lock:
-1. Decide full-height versus low-profile PCIe card.
-2. Create preliminary board outline in Altium.
-3. Add PCIe edge connector geometry and bracket datum.
-4. Import candidate connector STEP model.
-5. Verify bracket cutout and mating-cable clearance.
-6. Check FPGA placement relative to PCIe edge and external connector.
-7. Confirm major routing channels.
-8. Only then freeze connector part number and detailed LVDS package-pin mapping.
+Before freezing the external connector:
+
+1. Create a compliant low-profile PCIe board outline.
+2. Add the low-profile I/O bracket datum and keep-outs.
+3. Add the PCIe x4 edge connector geometry.
+4. Import or draw the 68-position MDR candidate using the manufacturer mechanical drawing.
+5. Check:
+   - bracket cutout fit
+   - screw-lock / latch access
+   - connector shell clearance
+   - PCB mounting-hole clearance
+   - cable backshell clearance
+   - insertion/removal clearance
+6. Check component-height restrictions around the connector and FPGA.
+7. Establish a preliminary FPGA placement.
+8. Evaluate routing from Banks 16/34/35 to the connector.
+9. If the 68-position MDR is too constrained, evaluate:
+   - smaller/multiple MDR connectors
+   - high-density shielded alternatives
+   - Samtec Q-Pairs / twinax solution
+   - two-connector architecture
 
 ## Open decisions
 
-- full-height or low-profile
-- exact board length
-- exact board thickness
-- bracket type
-- exact connector part number
-- connector right-angle versus vertical orientation
-- external cable exit direction
-- mounting/retention hardware
-- component-height limits
-- final chassis/shield bonding method
+Still TBD:
+- final board length
+- exact low-profile bracket drawing used in Altium
+- exact external connector part number
+- connector orientation
+- final connector pinout
+- PCB thickness / stack-up
+- final component-height plan
+- chassis/shield bonding method
 
 ## Rationale
 
-The external connector, FPGA orientation, PCIe edge, and board outline are strongly coupled. Freezing any one of them independently can create avoidable routing, mechanical, EMC, or manufacturability problems.
+Low-profile is preferred as the Rev A baseline because it provides a compact, widely compatible PCIe form factor and forces the design to solve mechanical and routing constraints early.
 
-Therefore the mechanical envelope is the next design gate before final external-I/O pin allocation.
+The tradeoff is reduced bracket and PCB area, so connector choice and floorplanning become design-critical rather than secondary decisions.
